@@ -1,123 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
   <base href="$FLUTTER_BASE_HREF">
+
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Weather App - Flutter Web App">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Weather App">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
+
   <title>Weather App</title>
   <link rel="manifest" href="manifest.json">
-  <script>
-    var serviceWorkerVersion = "{{flutter_service_worker_version}}";
-    var cloudMessagingSenderId = null;
-    var loadedRes = null;
-    var loadResPromise = null;
-    var loadResCallback = null;
-    var engineBuildNumber = null;
-    var engineRevision = null;
-    var engineCommitBranch = null;
-    var engineCommitSha = null;
-    var engineCommitTimestamp = null;
-
-    function loadServiceWorker() {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('flutter_service_worker.js?v=' + serviceWorkerVersion)
-            .then((reg) => {
-              if (!reg.active && (reg.installing || reg.waiting)) {
-                var worker = reg.installing || reg.waiting;
-                var stateListener = function() {
-                  switch (worker.state) {
-                    case 'installed':
-                      if (navigator.serviceWorker.controller) {
-                        worker.postMessage({type: 'skipWaiting'});
-                      }
-                      break;
-                    case 'activated':
-                      window.location.reload();
-                      break;
-                  }
-                };
-                worker.addEventListener('statechange', stateListener);
-              }
-            })
-            .catch((error) => {
-              console.error('ServiceWorker registration failed:', error);
-            });
-      }
-    }
-
-    function loadResource(url) {
-      return new Promise(function(resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.onload = function() {
-          if (xhr.status === 200 || xhr.status === 0) {
-            resolve(xhr.responseText);
-          } else {
-            reject(new Error('Failed to load resource: ' + url));
-          }
-        };
-        xhr.onerror = reject;
-        xhr.send();
-      });
-    }
-
-    function loadMainResource() {
-      return loadResource('main.dart.js');
-    }
-
-    function loadEntrypoint() {
-      return loadMainResource().then(function(source) {
-        if (loadedRes) {
-          return loadedRes;
-        }
-        var entrypoint = {
-          main: function() {
-            console.log('Flutter entrypoint loaded');
-          }
-        };
-        return entrypoint;
-      });
-    }
-
-    loadEntrypoint().then(function(entrypoint) {
-      entrypoint.main();
-      loadServiceWorker();
-    });
-  </script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    .loading {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      color: white;
-      font-family: Arial, sans-serif;
-      font-size: 18px;
-    }
-  </style>
 </head>
 <body>
-  <script>
-    window.addEventListener('load', function(ev) {
-      _flutter.loader.load({
-        serviceWorkerSettings: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-      });
-    });
-  </script>
-  <script src="flutter.js" defer></script>
+  <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
