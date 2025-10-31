@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Weather App - Flutter Web App">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Weather App">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>Weather App</title>
+  <link rel="manifest" href="manifest.json">
+  <script>
+    var serviceWorkerVersion = null;
+    var cloudMessagingSenderId = null;
+    var loadedRes = null;
+    var loadResPromise = null;
+    var loadResCallback = null;
+    var engineBuildNumber = null;
+    var engineRevision = null;
+    var engineCommitBranch = null;
+    var engineCommitSha = null;
+    var engineCommitTimestamp = null;
+
+    function loadServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('flutter_service_worker.js?v=' + serviceWorkerVersion)
+            .then((reg) => {
+              if (!reg.active && (reg.installing || reg.waiting)) {
+                var worker = reg.installing || reg.waiting;
+                var stateListener = function() {
+                  switch (worker.state) {
+                    case 'installed':
+                      if (navigator.serviceWorker.controller) {
+                        // The old service worker is still active. Force reload.
+                        worker.postMessage({type: 'skipWaiting'});
+                      }
+                      break;
+                    case 'activated':
+                      // The new service worker has activated. Force reload.
+                      window.location.reload();
+                      break;
+                  }
+                };
+                worker.addEventListener('statechange', stateListener);
+              }
+            })
+            .catch((error) => {
+              console.error('ServiceWorker registration failed:', error);
+            });
+      }
+    }
+
+    function loadResource(url) {
+      return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.onload = function() {
+          if (xhr.status === 200 || xhr.status === 0) {
+            resolve(xhr.responseText);
+          } else {
+            reject(new Error('Failed to load resource: ' + url));
+          }
+        };
+        xhr.onerror = reject;
+        xhr.send();
+      });
+    }
+
+    function loadMainResource() {
+      return loadResource('main.dart.js');
+    }
+
+    function loadEntrypoint() {
+      return loadMainResource().then(function(source) {
+        if (loadedRes) {
+          return loadedRes;
+        }
+        var entrypoint = {
+          main: function() {
+            // This will be replaced by Flutter's build system
+            console.log('Flutter entrypoint loaded');
+          }
+        };
+        return entrypoint;
+      });
+    }
+
+    // Initialize
+    loadEntrypoint().then(function(entrypoint) {
+      entrypoint.main();
+      loadServiceWorker();
+    });
+  </script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    #flutter-app {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+    }
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div id="flutter-app">
+    <div class="loading">
+      <div>Đang tải ứng dụng thời tiết...</div>
+    </div>
+  </div>
+  <script>
+    window.addEventListener('load', function(ev) {
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine().then(function(appRunner) {
+            appRunner.runApp();
+            document.querySelector('.loading').style.display = 'none';
+          });
+        }
+      });
+    });
+
+    // Fallback for older Flutter versions
+    if (typeof _flutter === 'undefined') {
+      window.addEventListener('load', function(ev) {
+        loadEntrypoint().then(function(entrypoint) {
+          entrypoint.main();
+          document.querySelector('.loading').style.display = 'none';
+        });
+      });
+    }
+  </script>
+  <script src="flutter.js" defer></script>
+</body>
+</html>
+
