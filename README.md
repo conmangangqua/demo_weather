@@ -126,11 +126,40 @@ fvm flutter build web --release
 fvm flutter analyze
 ```
 
+## Deploy lên GitHub Pages
+
+### Tự động với GitHub Actions (Khuyên dùng)
+
+1. Push code lên GitHub repository
+2. Vào **Settings** → **Pages** trong repository
+3. Chọn source: **GitHub Actions** hoặc branch **gh-pages**
+4. Workflow sẽ tự động build và deploy khi push code
+
+Có 2 workflow files:
+- `deploy-simple.yml` - Sử dụng peaceiris/actions-gh-pages (Đơn giản hơn)
+- `deploy.yml` - Sử dụng official GitHub Pages actions
+
+Xem chi tiết trong [DEPLOY.md](./DEPLOY.md)
+
+### Deploy thủ công
+
+```bash
+# Build với base-href là tên repository
+fvm flutter build web --release --base-href "/demo_weather/"
+
+# Deploy lên gh-pages branch
+cd build/web
+# Sử dụng gh-pages CLI hoặc git commands (xem DEPLOY.md)
+```
+
+App sẽ có tại: `https://[username].github.io/[repository-name]/`
+
 ## Lưu ý
 
 - API key cần được bảo mật, không commit vào git
 - Có thể sử dụng environment variables để quản lý API key
 - Để tối ưu performance, có thể cache dữ liệu thời tiết
+- Khi deploy lên GitHub Pages, đảm bảo `--base-href` khớp với tên repository
 
 ## License
 
