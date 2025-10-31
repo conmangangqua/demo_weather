@@ -13,7 +13,7 @@
   <title>Weather App</title>
   <link rel="manifest" href="manifest.json">
   <script>
-    var serviceWorkerVersion = null;
+    var serviceWorkerVersion = "{{flutter_service_worker_version}}";
     var cloudMessagingSenderId = null;
     var loadedRes = null;
     var loadResPromise = null;
@@ -34,12 +34,10 @@
                   switch (worker.state) {
                     case 'installed':
                       if (navigator.serviceWorker.controller) {
-                        // The old service worker is still active. Force reload.
                         worker.postMessage({type: 'skipWaiting'});
                       }
                       break;
                     case 'activated':
-                      // The new service worker has activated. Force reload.
                       window.location.reload();
                       break;
                   }
@@ -80,7 +78,6 @@
         }
         var entrypoint = {
           main: function() {
-            // This will be replaced by Flutter's build system
             console.log('Flutter entrypoint loaded');
           }
         };
@@ -88,7 +85,6 @@
       });
     }
 
-    // Initialize
     loadEntrypoint().then(function(entrypoint) {
       entrypoint.main();
       loadServiceWorker();
@@ -100,11 +96,6 @@
       padding: 0;
       overflow: hidden;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    #flutter-app {
-      width: 100%;
-      height: 100vh;
-      position: relative;
     }
     .loading {
       display: flex;
@@ -118,37 +109,15 @@
   </style>
 </head>
 <body>
-  <div id="flutter-app">
-    <div class="loading">
-      <div>Đang tải ứng dụng thời tiết...</div>
-    </div>
-  </div>
   <script>
     window.addEventListener('load', function(ev) {
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
+      _flutter.loader.load({
+        serviceWorkerSettings: {
           serviceWorkerVersion: serviceWorkerVersion,
         },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-            document.querySelector('.loading').style.display = 'none';
-          });
-        }
       });
     });
-
-    // Fallback for older Flutter versions
-    if (typeof _flutter === 'undefined') {
-      window.addEventListener('load', function(ev) {
-        loadEntrypoint().then(function(entrypoint) {
-          entrypoint.main();
-          document.querySelector('.loading').style.display = 'none';
-        });
-      });
-    }
   </script>
   <script src="flutter.js" defer></script>
 </body>
 </html>
-
